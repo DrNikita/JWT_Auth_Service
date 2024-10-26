@@ -1,16 +1,19 @@
-package internal
+package http
 
 import (
 	"log/slog"
+
+	"auth/internal/db"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 type authRepository struct {
-	logger *slog.Logger
+	dbService *db.DbService
+	logger    *slog.Logger
 }
 
-func NewAuthRepository(logger *slog.Logger) *authRepository {
+func NewAuthRepository(dbService *db.DbService, logger *slog.Logger) *authRepository {
 	return &authRepository{
 		logger: logger,
 	}

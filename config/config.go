@@ -1,4 +1,4 @@
-package configs
+package config
 
 import (
 	_ "github.com/jpfuentes2/go-env/autoload"
@@ -15,6 +15,7 @@ type DbConfig struct {
 	Port     string `envconfig:"port"`
 	Username string `envconfig:"username"`
 	Password string `envconfig:"password"`
+	Name     string `envconfig:"name"`
 }
 
 func (hc *HttpConfig) MustConfig() error {
