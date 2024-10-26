@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:13.3
+    environment:
+      POSTGRES_DB: jwt_auth
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - postgres
+    volumes:
+      - ./db_up.sql:/docker-entrypoint-initdb.d/db_up.sql
+      - db-data:/var/lib/postgresql/data
+    restart: always
+  pgadmin-compose:
+      image: dpage/pgadmin4
+      environment:
+        PGADMIN_DEFAULT_EMAIL: "nikita@gmail.com"
+        PGADMIN_DEFAULT_PASSWORD: "test123"
+      ports:
+        - "16543:80"
+      networks:
+        - postgres
+      volumes:
+        - pgadmin-data:/var/lib/pgadmin
+      depends_on:
+        - postgres
+      restart: always
+
+networks:
+  postgres:
+    driver: bridge
+volumes:
+  db-data:
+  pgadmin-data:
