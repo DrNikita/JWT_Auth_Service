@@ -19,7 +19,9 @@ func NewDbService(db *gorm.DB, logger *slog.Logger) *DbService {
 }
 
 func (ds *DbService) CreateUser(user *User) (int64, error) {
-	return 0, nil
+	ds.db.Create(user)
+
+	return user.Id, nil
 }
 
 func (ds *DbService) UpdateUser(user *User) (int64, error) {

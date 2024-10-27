@@ -1,7 +1,7 @@
 package db
 
 type User struct {
-	Id         int64 `gorm:"primaryKey"`
+	Id         int64 `gorm:"primaryKey;autoIncrement:true"`
 	JobRoleId  int
 	JobRole    JobRole `gorm:"foreignKey:JobRoleId"`
 	AddressId  int64
@@ -11,8 +11,12 @@ type User struct {
 	Surname    string
 	Email      string
 	Password   string
-	Birthday   string
+	Birthday   int64
 	IsActive   string `gorm:"default:true"`
+}
+
+func (User) TableName() string {
+	return "user"
 }
 
 type Address struct {

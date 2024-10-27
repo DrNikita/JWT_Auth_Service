@@ -2,6 +2,7 @@ package http
 
 import (
 	"log/slog"
+	"strconv"
 
 	"auth/internal/db"
 
@@ -15,14 +16,32 @@ type authRepository struct {
 
 func NewAuthRepository(dbService *db.DbService, logger *slog.Logger) *authRepository {
 	return &authRepository{
-		logger: logger,
+		dbService: dbService,
+		logger:    logger,
 	}
 }
 
 func (ar *authRepository) RegisterRouts(app *fiber.App) {
-	app.Get("/", handler)
+	app.Post("/register", ar.registerUser)
 }
 
-func handler(c *fiber.Ctx) error {
+func (ar *authRepository) registerUser(c *fiber.Ctx) error {
+	var user db.User
+
+	err := c.BodyParser(&user)
+	if err != nil {
+		return err
+	}
+
+	id, err := ar.dbService.CreateUser(&user)
+	if err != nil {
+		return err
+	}
+
+	err = c.SendString(strconv.Itoa(int(id)))
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
