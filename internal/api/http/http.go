@@ -38,7 +38,7 @@ func (ar *authRepository) registerUser(c *fiber.Ctx) error {
 		return err
 	}
 
-	err = c.SendString(strconv.Itoa(int(id)))
+	err = c.SendString(strconv.Itoa(int(*id)))
 	if err != nil {
 		return err
 	}

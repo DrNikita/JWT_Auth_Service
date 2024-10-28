@@ -18,16 +18,30 @@ func NewDbService(db *gorm.DB, logger *slog.Logger) *DbService {
 	}
 }
 
-func (ds *DbService) CreateUser(user *User) (int64, error) {
-	ds.db.Create(user)
-
+func (ds *DbService) CreateUser(user *User) (*int64, error) {
+	result := ds.db.Create(user)
+	if result.Error != nil {
+		return nil, result.Error
+	}
 	return user.Id, nil
 }
 
-func (ds *DbService) UpdateUser(user *User) (int64, error) {
-	return 0, nil
+func (ds *DbService) UpdateUser(user *User) (*int64, error) {
+	result := ds.db.Create(user)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return user.Id, nil
 }
 
-func (ds *DbService) CreateVideo(videoHistory *VideoHistory) (int64, error) {
-	return 0, nil
+func (ds *DbService) DeactivateUser(user *User) (*int64, error) {
+	result := ds.db.Create(user)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return user.Id, nil
+}
+
+func (ds *DbService) CreateVideoStory(videoHistory *VideoHistory) (*int64, error) {
+	return nil, nil
 }
