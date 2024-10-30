@@ -1,18 +1,21 @@
 package db
 
+import "time"
+
 type User struct {
-	Id         *int64   `gorm:"primaryKey;autoIncrement:true"`
-	JobRoleId  *int     `gorm:"default:1"`
-	JobRole    *JobRole `gorm:"foreignKey:JobRoleId"`
-	AddressId  *int64   `gorm:"foreignKey:JobRoleId;default:null"`
-	Address    *Address `gorm:"foreignKey:AddressId"`
-	Name       *string
-	SecondName *string
-	Surname    *string
-	Email      *string
-	Password   *string
-	Birthday   *int64
-	IsActive   *string `gorm:"default:true"`
+	Id           *int64   `gorm:"primaryKey;autoIncrement:true"`
+	JobRoleId    *int     `gorm:"default:1"`
+	JobRole      *JobRole `gorm:"foreignKey:JobRoleId"`
+	AddressId    *int64   `gorm:"foreignKey:JobRoleId;default:null"`
+	Address      *Address `gorm:"foreignKey:AddressId"`
+	Name         *string
+	SecondName   *string
+	Surname      *string
+	Email        *string
+	Password     *string   `json:"-"`
+	Birthday     *int64    `json:"-"`
+	BirthdayDate time.Time `gorm:"-"`
+	IsActive     *string   `gorm:"default:true"`
 }
 
 func (User) TableName() string {
