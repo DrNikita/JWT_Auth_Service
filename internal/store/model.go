@@ -1,4 +1,4 @@
-package db
+package store
 
 import "time"
 
@@ -12,8 +12,8 @@ type User struct {
 	SecondName   *string
 	Surname      *string
 	Email        *string
-	Password     *string   `json:"-"`
-	Birthday     *int64    `json:"-"`
+	Password     *string
+	Birthday     *int64
 	BirthdayDate time.Time `gorm:"-"`
 	IsActive     *string   `gorm:"default:true"`
 }

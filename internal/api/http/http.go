@@ -2,46 +2,43 @@ package http
 
 import (
 	"log/slog"
-	"strconv"
 
-	"auth/internal/db"
+	"auth/internal/api/service"
+	"auth/internal/store"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-type authRepository struct {
-	dbService *db.DbService
-	logger    *slog.Logger
+type httpRepository struct {
+	httpService *service.HttpService
+	logger      *slog.Logger
 }
 
-func NewAuthRepository(dbService *db.DbService, logger *slog.Logger) *authRepository {
-	return &authRepository{
-		dbService: dbService,
-		logger:    logger,
+func NewAuthRepository(httpService *service.HttpService, logger *slog.Logger) *httpRepository {
+	return &httpRepository{
+		httpService: httpService,
+		logger:      logger,
 	}
 }
 
-func (ar *authRepository) RegisterRouts(app *fiber.App) {
-	app.Post("/register", ar.registerUser)
+func (hr *httpRepository) RegisterRouts(app *fiber.App) {
+	app.Post("/register", hr.registerUser)
 }
 
-func (ar *authRepository) registerUser(c *fiber.Ctx) error {
-	var user db.User
+func (hr *httpRepository) registerUser(c *fiber.Ctx) error {
+	var user *store.User
 
 	err := c.BodyParser(&user)
 	if err != nil {
 		return err
 	}
 
-	id, err := ar.dbService.CreateUser(&user)
+	jwt, err := hr.httpService.RegisterUser(user)
 	if err != nil {
-		return err
+		c.SendString(err.Error())
 	}
 
-	err = c.SendString(strconv.Itoa(int(*id)))
-	if err != nil {
-		return err
-	}
+	c.SendString(jwt)
 
 	return nil
 }

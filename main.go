@@ -3,7 +3,8 @@ package main
 import (
 	"auth/config"
 	"auth/internal/api/http"
-	dbService "auth/internal/db"
+	"auth/internal/api/service"
+	"auth/internal/store"
 	"fmt"
 	"log"
 	"log/slog"
@@ -37,10 +38,11 @@ func main() {
 
 	app := fiber.New()
 
-	dbService := dbService.NewDbService(db, logger)
+	storeService := store.NewDbService(db, logger)
+	httpService := service.NewHttpService(storeService, logger)
+	authRepository := http.NewAuthRepository(httpService, logger)
 
-	authRepository := http.NewAuthRepository(dbService, logger)
 	authRepository.RegisterRouts(app)
-
+	
 	app.Listen(httpConfig.Host + ":" + httpConfig.Port)
 }
