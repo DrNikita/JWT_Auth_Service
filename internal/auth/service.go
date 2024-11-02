@@ -2,26 +2,26 @@ package auth
 
 import (
 	"auth/internal/store"
+	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
 
+var jwtSecretKey = []byte("very-secret-key")
+
 func CreateJWT(user *store.User) (string, error) {
-	key := "secret"
 
-	t := jwt.NewWithClaims(jwt.SigningMethodES256,
-		jwt.MapClaims{
-			"iss":        "my-auth-server",
-			"user_id":    user.Id,
-			"sub":        user.Name,
-			"user_email": user.Email,
-			"foo":        2,
-		})
+	payload := jwt.MapClaims{
+		"sub": user.Email,
+		"exp": time.Now().Add(time.Minute * 30).Unix(),
+	}
 
-	signedJWT, err := t.SignedString(key)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
+
+	t, err := token.SignedString(jwtSecretKey)
 	if err != nil {
 		return "", err
 	}
 
-	return signedJWT, nil
+	return t, nil
 }
