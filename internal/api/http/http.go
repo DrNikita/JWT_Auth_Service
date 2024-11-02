@@ -38,7 +38,7 @@ func (hr *httpRepository) registerUser(c *fiber.Ctx) error {
 		c.SendString(err.Error())
 	}
 
-	c.SendString(jwt)
+	c.JSON(jwt)
 
 	return nil
 }

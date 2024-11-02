@@ -7,26 +7,28 @@ import (
 )
 
 type HttpService struct {
-	storeService store.StoreService
+	authService  *auth.AuthService
+	storeService *store.StoreService
 	logger       *slog.Logger
 }
 
-func NewHttpService(storeService *store.StoreService, logger *slog.Logger) *HttpService {
+func NewHttpService(authService *auth.AuthService, storeService *store.StoreService, logger *slog.Logger) *HttpService {
 	return &HttpService{
-		storeService: *storeService,
+		authService:  authService,
+		storeService: storeService,
 		logger:       logger,
 	}
 }
 
-func (hs *HttpService) RegisterUser(user *store.User) (string, error) {
+func (hs *HttpService) RegisterUser(user *store.User) (*auth.Token, error) {
 	_, err := hs.storeService.CreateUser(user)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	jwt, err := auth.CreateJWT(user)
+	jwt, err := hs.authService.CreateToken(user)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	return jwt, nil

@@ -5,6 +5,10 @@ import (
 	"github.com/kelseyhightower/envconfig"
 )
 
+type AuthConfig struct {
+	SecretKey string `envconfig:"secret_key"`
+}
+
 type HttpConfig struct {
 	Host string `envconfig:"host"`
 	Port string `envconfig:"port"`
@@ -16,6 +20,10 @@ type DbConfig struct {
 	Username string `envconfig:"username"`
 	Password string `envconfig:"password"`
 	Name     string `envconfig:"name"`
+}
+
+func (ac *AuthConfig) MustConfig() error {
+	return envconfig.Process("", ac)
 }
 
 func (hc *HttpConfig) MustConfig() error {

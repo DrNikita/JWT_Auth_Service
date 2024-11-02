@@ -4,6 +4,7 @@ import (
 	"auth/config"
 	"auth/internal/api/http"
 	"auth/internal/api/service"
+	"auth/internal/auth"
 	"auth/internal/store"
 	"fmt"
 	"log"
@@ -18,10 +19,15 @@ import (
 func main() {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{AddSource: true}))
 
+	var authConfig config.AuthConfig
 	var httpConfig config.HttpConfig
 	var dbConfig config.DbConfig
 
-	err := httpConfig.MustConfig()
+	err := authConfig.MustConfig()
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = httpConfig.MustConfig()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -38,11 +44,12 @@ func main() {
 
 	app := fiber.New()
 
+	authService := auth.NewAuthService(&authConfig, logger)
 	storeService := store.NewDbService(db, logger)
-	httpService := service.NewHttpService(storeService, logger)
+	httpService := service.NewHttpService(authService, storeService, logger)
 	authRepository := http.NewAuthRepository(httpService, logger)
 
 	authRepository.RegisterRouts(app)
-	
+
 	app.Listen(httpConfig.Host + ":" + httpConfig.Port)
 }
