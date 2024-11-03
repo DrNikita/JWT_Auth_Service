@@ -6,7 +6,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
-	"crypto/sha1"
+	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
 	"io"
@@ -29,15 +29,8 @@ func NewAuthService(config *config.AuthConfig, logger *slog.Logger) *AuthService
 }
 
 func (as *AuthService) CreateToken(user *store.User) (*Token, error) {
-
-	payload := jwt.MapClaims{
-		"sub": user.Email,
-		"exp": time.Now().Add(time.Minute * 10).Unix(),
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
-
-	accessToken, err := token.SignedString([]byte(as.config.SecretKey))
+	userClaims := createUserClaims(user)
+	accessToken, err := as.createAccessToken(&userClaims)
 	if err != nil {
 		return nil, err
 	}
@@ -53,11 +46,22 @@ func (as *AuthService) CreateToken(user *store.User) (*Token, error) {
 	}, nil
 }
 
-func (as *AuthService) createRefreshToken(accessToken string) (string, error) {
-	sha1 := sha1.New()
-	io.WriteString(sha1, as.config.SecretKey)
+func (as *AuthService) createAccessToken(claims *jwt.MapClaims) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	salt := string(sha1.Sum(nil))[0:16]
+	accessToken, err := token.SignedString([]byte(as.config.SecretKey))
+	if err != nil {
+		return "", err
+	}
+
+	return accessToken, nil
+}
+
+func (as *AuthService) createRefreshToken(accessToken string) (string, error) {
+	sha256 := sha256.New()
+	io.WriteString(sha256, as.config.SecretKey)
+
+	salt := string(sha256.Sum(nil))[0:16]
 	block, err := aes.NewCipher([]byte(salt))
 	if err != nil {
 		fmt.Println(err.Error())
@@ -80,3 +84,13 @@ func (as *AuthService) createRefreshToken(accessToken string) (string, error) {
 
 	return refreshToken, nil
 }
+
+func createUserClaims(user *store.User) jwt.MapClaims {
+	return jwt.MapClaims{
+		"email":    user.Email,
+		"job_role": user.JobRole,
+		"exp":      time.Now().Add(time.Minute * 10).Unix(),
+	}
+}
+
+
