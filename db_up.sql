@@ -7,18 +7,18 @@ DROP TABLE IF EXISTS address;
 
 CREATE TABLE IF NOT EXISTS role (
 	id serial PRIMARY KEY,
-	name varchar(256)
+	name varchar(256) UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS job_role (
 	id serial PRIMARY KEY,
     role_id integer REFERENCES role(id),
-	name varchar(256)
+	name varchar(256) UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS settlement_type (
-	id integer PRIMARY KEY,
-	name varchar(256)
+	id serial PRIMARY KEY,
+	name varchar(256) UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS address (
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS "user" (
 	name varchar(256),
 	second_name varchar(256),
 	surname varchar(256),
-	email varchar(256) NOT NULL,
+	email varchar(256) NOT NULL UNIQUE,
 	password varchar(256) NOT NULL,
 	birthday bigint NOT NULL,
 	is_active boolean NOT NULL
@@ -56,8 +56,9 @@ CREATE TABLE IF NOT EXISTS video_history (
 INSERT INTO role (name) VALUES ('client');
 INSERT INTO role (name) VALUES ('admin');
 
+INSERT INTO job_role (role_id, name) VALUES ((SELECT id FROM role WHERE name='admin'),'dev-ops');
+INSERT INTO job_role (role_id, name) VALUES ((SELECT id FROM role WHERE name='admin'),'GO-developer');
 INSERT INTO job_role (role_id, name) VALUES ((SELECT id FROM role WHERE name='client'),'unknown');
-INSERT INTO job_role (role_id, name) VALUES ((SELECT id FROM role WHERE name='client'),'GO-developer');
 INSERT INTO job_role (role_id, name) VALUES ((SELECT id FROM role WHERE name='client'),'business analyst');
 INSERT INTO job_role (role_id, name) VALUES ((SELECT id FROM role WHERE name='client'),'qa');
 INSERT INTO job_role (role_id, name) VALUES ((SELECT id FROM role WHERE name='client'),'aqa');

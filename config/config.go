@@ -10,8 +10,9 @@ type AuthConfig struct {
 }
 
 type HttpConfig struct {
-	Host string `envconfig:"host"`
-	Port string `envconfig:"port"`
+	Host           string `envconfig:"host"`
+	Port           string `envconfig:"port"`
+	ContextTimeout int    `envconfig:"context_timeout"`
 }
 
 type DbConfig struct {
