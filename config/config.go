@@ -7,6 +7,7 @@ import (
 
 type AuthConfig struct {
 	SecretKey string `envconfig:"secret_key"`
+	CookieSecret string `envconfig:"COOKIE_SECRET"`
 }
 
 type HttpConfig struct {

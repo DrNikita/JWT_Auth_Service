@@ -8,7 +8,7 @@ type LogiinUserRequest struct {
 }
 
 type RegisterUserRequest struct {
-	JobRoleId    int
+	JobRoleId    int `json:"job_role_id"`
 	Address      Address
 	Name         string
 	SecondName   string

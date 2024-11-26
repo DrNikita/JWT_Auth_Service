@@ -65,27 +65,6 @@ func (as *AuthService) createAccessToken(id int64, email string, isAdmin bool, d
 	return signedToken, claims, nil
 }
 
-func (as *AuthService) VerifyToken(accessToken string) (*UserClaims, error) {
-	token, err := jwt.ParseWithClaims(accessToken, &UserClaims{}, func(token *jwt.Token) (interface{}, error) {
-		_, ok := token.Method.(*jwt.SigningMethodHMAC)
-		if !ok {
-			return nil, fmt.Errorf("invalid token signing method")
-		}
-
-		return []byte(as.config.SecretKey), nil
-	})
-	if err != nil {
-		return nil, fmt.Errorf("error parsing token")
-	}
-
-	claims, ok := token.Claims.(*UserClaims)
-	if !ok {
-		return nil, fmt.Errorf("invalid token claims")
-	}
-
-	return claims, nil
-}
-
 func (as *AuthService) createRefreshToken(accessToken string) (string, error) {
 	sha256 := sha256.New()
 	io.WriteString(sha256, as.config.SecretKey)
@@ -112,6 +91,27 @@ func (as *AuthService) createRefreshToken(accessToken string) (string, error) {
 	refreshToken := base64.URLEncoding.EncodeToString(gcm.Seal(nonce, nonce, []byte(accessToken), nil))
 
 	return refreshToken, nil
+}
+
+func (as *AuthService) VerifyAccessToken(accessToken string) (*UserClaims, error) {
+	token, err := jwt.ParseWithClaims(accessToken, &UserClaims{}, func(token *jwt.Token) (interface{}, error) {
+		_, ok := token.Method.(*jwt.SigningMethodHMAC)
+		if !ok {
+			return nil, fmt.Errorf("invalid token signing method")
+		}
+
+		return []byte(as.config.SecretKey), nil
+	})
+	if err != nil {
+		return nil, fmt.Errorf("error parsing token")
+	}
+
+	claims, ok := token.Claims.(*UserClaims)
+	if !ok {
+		return nil, fmt.Errorf("invalid token claims")
+	}
+
+	return claims, nil
 }
 
 func (as *AuthService) VerifyRefreshToken(token *Token) error {
