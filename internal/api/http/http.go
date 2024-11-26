@@ -4,6 +4,7 @@ import (
 	"auth/config"
 	"auth/internal/auth"
 	"context"
+	"errors"
 	"log/slog"
 	"net/http"
 	"time"
@@ -105,11 +106,11 @@ func (hr *httpRepository) registration(c *fiber.Ctx) error {
 }
 
 func (hr *httpRepository) verifyToken(c *fiber.Ctx) error {
-	accessToken := c.Request().Header.Peek("access_token")
-	refreshToken := c.Request().Header.Peek("refresh_token")
-	token := auth.Token{
-		Access:  string(accessToken),
-		Refresh: string(refreshToken),
+	token, err := parseHeaderToken(c.GetReqHeaders())
+	if err != nil {
+		c.Status(http.StatusBadRequest)
+		c.JSON(err)
+		return err
 	}
 
 	claims, err := hr.authService.VerifyAccessToken(token.Access)
@@ -119,7 +120,7 @@ func (hr *httpRepository) verifyToken(c *fiber.Ctx) error {
 		return err
 	}
 
-	if err = hr.authService.VerifyRefreshToken(&token); err != nil {
+	if err = hr.authService.VerifyRefreshToken(token); err != nil {
 		c.Status(http.StatusBadRequest)
 		c.JSON(err)
 		return err
@@ -128,4 +129,23 @@ func (hr *httpRepository) verifyToken(c *fiber.Ctx) error {
 	c.Status(http.StatusOK)
 	c.JSON(claims)
 	return nil
+}
+
+func parseHeaderToken(headers map[string][]string) (*auth.Token, error) {
+	token := new(auth.Token)
+
+	accessToken, ok := headers["Access_token"]
+	if ok && len(accessToken) > 0 {
+		token.Access = accessToken[0]
+	} else {
+		return nil, errors.New("failed to get access token from headers")
+	}
+	refreshToken, ok := headers["Refresh_token"]
+	if ok && len(refreshToken) > 0 {
+		token.Refresh = refreshToken[0]
+	} else {
+		return nil, errors.New("failed to get refresh token from headers")
+	}
+
+	return token, nil
 }
