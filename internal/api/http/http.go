@@ -105,18 +105,27 @@ func (hr *httpRepository) registration(c *fiber.Ctx) error {
 }
 
 func (hr *httpRepository) verifyToken(c *fiber.Ctx) error {
+	accessToken := c.Request().Header.Peek("access_token")
+	refreshToken := c.Request().Header.Peek("refresh_token")
 	token := auth.Token{
-		Access:  string(c.Request().Header.Peek("access_token")),
-		Refresh: string(c.Request().Header.Peek("refresh_token")),
+		Access:  string(accessToken),
+		Refresh: string(refreshToken),
 	}
 
-	if _, err := hr.authService.VerifyAccessToken(token.Access); err != nil {
+	claims, err := hr.authService.VerifyAccessToken(token.Access)
+	if err != nil {
+		c.Status(http.StatusBadRequest)
+		c.JSON(err)
+		return err
+	}
+
+	if err = hr.authService.VerifyRefreshToken(&token); err != nil {
 		c.Status(http.StatusBadRequest)
 		c.JSON(err)
 		return err
 	}
 
 	c.Status(http.StatusOK)
-	c.JSON(token)
+	c.JSON(claims)
 	return nil
 }
