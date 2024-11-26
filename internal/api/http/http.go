@@ -13,22 +13,18 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/encryptcookie"
 )
 
-// var cookieSecret string
-
-// func Init() {
-// 	cookieSecret = encryptcookie.GenerateKey()
-// }
-
 type httpRepository struct {
 	httpService *HttpService
+	authService *auth.AuthRepository
 	authConfig  *config.AuthConfig
 	logger      *slog.Logger
 	ctx         *context.Context
 }
 
-func NewAuthRepository(httpService *HttpService, authConfig *config.AuthConfig, logger *slog.Logger, ctx *context.Context) *httpRepository {
+func NewAuthRepository(httpService *HttpService, authService *auth.AuthRepository, authConfig *config.AuthConfig, logger *slog.Logger, ctx *context.Context) *httpRepository {
 	return &httpRepository{
 		httpService: httpService,
+		authService: authService,
 		authConfig:  authConfig,
 		logger:      logger,
 		ctx:         ctx,
@@ -109,11 +105,18 @@ func (hr *httpRepository) registration(c *fiber.Ctx) error {
 }
 
 func (hr *httpRepository) verifyToken(c *fiber.Ctx) error {
-	c.Status(http.StatusOK)
 	token := auth.Token{
-		Access:  c.Cookies("access_token"),
-		Refresh: c.Cookies("refresh_token"),
+		Access:  string(c.Request().Header.Peek("access_token")),
+		Refresh: string(c.Request().Header.Peek("refresh_token")),
 	}
+
+	if _, err := hr.authService.VerifyAccessToken(token.Access); err != nil {
+		c.Status(http.StatusBadRequest)
+		c.JSON(err)
+		return err
+	}
+
+	c.Status(http.StatusOK)
 	c.JSON(token)
 	return nil
 }

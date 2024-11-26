@@ -61,7 +61,7 @@ func main() {
 	authService := auth.NewAuthService(&authConfig, logger, &ctx)
 	storeService := store.NewDbService(db, logger, &ctx)
 	httpService := http.NewHttpService(authService, storeService, logger, &ctx)
-	authRepository := http.NewAuthRepository(httpService, &authConfig, logger, &ctx)
+	authRepository := http.NewAuthRepository(httpService, authService, &authConfig, logger, &ctx)
 
 	authRepository.RegisterRouts(app)
 

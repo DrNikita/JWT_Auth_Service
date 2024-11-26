@@ -18,21 +18,21 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-type AuthService struct {
+type AuthRepository struct {
 	config *config.AuthConfig
 	logger *slog.Logger
 	ctx    *context.Context
 }
 
-func NewAuthService(config *config.AuthConfig, logger *slog.Logger, ctx *context.Context) *AuthService {
-	return &AuthService{
+func NewAuthService(config *config.AuthConfig, logger *slog.Logger, ctx *context.Context) *AuthRepository {
+	return &AuthRepository{
 		config: config,
 		logger: logger,
 		ctx:    ctx,
 	}
 }
 
-func (as *AuthService) CreateToken(user *store.User) (*Token, error) {
+func (as *AuthRepository) CreateToken(user *store.User) (*Token, error) {
 	accessToken, _, err := as.createAccessToken(user.Id, user.Email, false, time.Minute*15)
 	if err != nil {
 		return nil, err
@@ -49,7 +49,7 @@ func (as *AuthService) CreateToken(user *store.User) (*Token, error) {
 	}, nil
 }
 
-func (as *AuthService) createAccessToken(id int64, email string, isAdmin bool, duration time.Duration) (string, *UserClaims, error) {
+func (as *AuthRepository) createAccessToken(id int64, email string, isAdmin bool, duration time.Duration) (string, *UserClaims, error) {
 	claims, err := NewUserClaims(id, email, isAdmin, duration)
 	if err != nil {
 		return "", nil, err
@@ -65,7 +65,7 @@ func (as *AuthService) createAccessToken(id int64, email string, isAdmin bool, d
 	return signedToken, claims, nil
 }
 
-func (as *AuthService) createRefreshToken(accessToken string) (string, error) {
+func (as *AuthRepository) createRefreshToken(accessToken string) (string, error) {
 	sha256 := sha256.New()
 	io.WriteString(sha256, as.config.SecretKey)
 
@@ -93,7 +93,7 @@ func (as *AuthService) createRefreshToken(accessToken string) (string, error) {
 	return refreshToken, nil
 }
 
-func (as *AuthService) VerifyAccessToken(accessToken string) (*UserClaims, error) {
+func (as *AuthRepository) VerifyAccessToken(accessToken string) (*UserClaims, error) {
 	token, err := jwt.ParseWithClaims(accessToken, &UserClaims{}, func(token *jwt.Token) (interface{}, error) {
 		_, ok := token.Method.(*jwt.SigningMethodHMAC)
 		if !ok {
@@ -114,7 +114,7 @@ func (as *AuthService) VerifyAccessToken(accessToken string) (*UserClaims, error
 	return claims, nil
 }
 
-func (as *AuthService) VerifyRefreshToken(token *Token) error {
+func (as *AuthRepository) VerifyRefreshToken(token *Token) error {
 	sha256 := sha256.New()
 	io.WriteString(sha256, as.config.SecretKey)
 

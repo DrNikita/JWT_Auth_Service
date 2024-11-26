@@ -10,13 +10,13 @@ import (
 )
 
 type HttpService struct {
-	authService  *auth.AuthService
+	authService  *auth.AuthRepository
 	storeService *store.StoreService
 	logger       *slog.Logger
 	ctx          *context.Context
 }
 
-func NewHttpService(authService *auth.AuthService, storeService *store.StoreService, logger *slog.Logger, ctx *context.Context) *HttpService {
+func NewHttpService(authService *auth.AuthRepository, storeService *store.StoreService, logger *slog.Logger, ctx *context.Context) *HttpService {
 	return &HttpService{
 		authService:  authService,
 		storeService: storeService,
