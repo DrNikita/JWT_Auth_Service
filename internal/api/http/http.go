@@ -35,7 +35,7 @@ func NewAuthRepository(httpService *HttpService, authService *auth.AuthRepositor
 func (hr *httpRepository) RegisterRouts(app *fiber.App) {
 	app.Post("/login", hr.login)
 	app.Post("/register", hr.registration)
-	app.Post("/verify", hr.verifyToken)
+	app.Post("/verify-token", hr.verifyToken)
 
 	app.Use(encryptcookie.New(encryptcookie.Config{
 		Key:    hr.authConfig.CookieSecret,
