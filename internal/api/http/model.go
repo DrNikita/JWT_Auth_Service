@@ -1,14 +1,22 @@
 package http
 
-import "time"
+import (
+	"auth/internal/auth"
+	"time"
+)
 
 type LogiinUserRequest struct {
 	Email    string
 	Password string
 }
 
+type LoginUserResponse struct {
+	Token *auth.Token `json:",omitempty"`
+	Error error       `json:",omitempty"`
+}
+
 type RegisterUserRequest struct {
-	JobRoleId    int `json:"job_role_id"`
+	JobRoleId    int
 	Address      Address
 	Name         string
 	SecondName   string
@@ -20,7 +28,7 @@ type RegisterUserRequest struct {
 }
 
 type Address struct {
-	SettlementTypeId int `json:"settlement_type_id"`
+	SettlementTypeId int
 	Country          string
 	Region           string
 	District         string

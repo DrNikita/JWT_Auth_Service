@@ -105,6 +105,30 @@ func (hr *httpRepository) registration(c *fiber.Ctx) error {
 	return nil
 }
 
+func (hr *httpRepository) verifyCookieToken(c *fiber.Ctx) error {
+	token := &auth.Token{
+		Access:  c.Cookies("access_token"),
+		Refresh: c.Cookies("refresh_token"),
+	}
+
+	claims, err := hr.authService.VerifyAccessToken(token.Access)
+	if err != nil {
+		c.Status(http.StatusBadRequest)
+		c.JSON(err)
+		return err
+	}
+
+	if err = hr.authService.VerifyRefreshToken(token); err != nil {
+		c.Status(http.StatusBadRequest)
+		c.JSON(err)
+		return err
+	}
+
+	c.Status(http.StatusOK)
+	c.JSON(claims)
+	return nil
+}
+
 func (hr *httpRepository) verifyToken(c *fiber.Ctx) error {
 	token, err := parseHeaderToken(c.GetReqHeaders())
 	if err != nil {
