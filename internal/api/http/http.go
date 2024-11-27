@@ -113,19 +113,41 @@ func (hr *httpRepository) verifyCookieToken(c *fiber.Ctx) error {
 
 	claims, err := hr.authService.VerifyAccessToken(token.Access)
 	if err != nil {
-		c.Status(http.StatusBadRequest)
-		c.JSON(err)
-		return err
-	}
+		claims, err := hr.authService.VerifyRefreshToken(token.Refresh)
+		if err != nil {
+			c.Status(http.StatusBadRequest)
+			c.JSON(LoginUserResponse{
+				Error: err,
+			})
+			c.Status(http.StatusUnauthorized)
+			c.JSON(LoginUserResponse{
+				Error: err,
+			})
+			return err
+		}
 
-	if err = hr.authService.VerifyRefreshToken(token); err != nil {
-		c.Status(http.StatusBadRequest)
-		c.JSON(err)
-		return err
+		newAccessToken, err := hr.authService.CreateAccessToken(claims)
+		if err != nil {
+			c.Status(http.StatusBadRequest)
+			c.JSON(LoginUserResponse{
+				Error: err,
+			})
+		}
+
+		token.Access = newAccessToken
+		c.Status(http.StatusCreated)
+		c.JSON(LoginUserResponse{
+			Token:  token,
+			Claims: claims,
+		})
+		return nil
 	}
 
 	c.Status(http.StatusOK)
-	c.JSON(claims)
+	c.JSON(LoginUserResponse{
+		Token:  token,
+		Claims: claims,
+	})
 	return nil
 }
 
@@ -139,15 +161,34 @@ func (hr *httpRepository) verifyToken(c *fiber.Ctx) error {
 
 	claims, err := hr.authService.VerifyAccessToken(token.Access)
 	if err != nil {
-		if err = hr.authService.VerifyRefreshToken(token); err != nil {
+		claims, err := hr.authService.VerifyRefreshToken(token.Refresh)
+		if err != nil {
 			c.Status(http.StatusBadRequest)
+			c.JSON(LoginUserResponse{
+				Error: err,
+			})
+			c.Status(http.StatusUnauthorized)
 			c.JSON(LoginUserResponse{
 				Error: err,
 			})
 			return err
 		}
 
-		//TODO: refresh access token
+		newAccessToken, err := hr.authService.CreateAccessToken(claims)
+		if err != nil {
+			c.Status(http.StatusBadRequest)
+			c.JSON(LoginUserResponse{
+				Error: err,
+			})
+		}
+
+		token.Access = newAccessToken
+		c.Status(http.StatusCreated)
+		c.JSON(LoginUserResponse{
+			Token:  token,
+			Claims: claims,
+		})
+		return nil
 	}
 
 	c.Status(http.StatusOK)
