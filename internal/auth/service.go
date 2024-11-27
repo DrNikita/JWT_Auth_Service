@@ -33,7 +33,7 @@ func NewAuthService(config *config.AuthConfig, logger *slog.Logger, ctx *context
 }
 
 func (as *AuthRepository) CreateToken(user *store.User) (*Token, error) {
-	accessToken, _, err := as.createAccessToken(user.Id, user.Email, false, time.Minute*15)
+	accessToken, err := as.createAccessToken(user.Id, user.Email, false, time.Minute*15)
 	if err != nil {
 		return nil, err
 	}
@@ -49,20 +49,20 @@ func (as *AuthRepository) CreateToken(user *store.User) (*Token, error) {
 	}, nil
 }
 
-func (as *AuthRepository) createAccessToken(id int64, email string, isAdmin bool, duration time.Duration) (string, *UserClaims, error) {
+func (as *AuthRepository) createAccessToken(id int64, email string, isAdmin bool, duration time.Duration) (string, error) {
 	claims, err := NewUserClaims(id, email, isAdmin, duration)
 	if err != nil {
-		return "", nil, err
+		return "", err
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	signedToken, err := token.SignedString([]byte(as.config.SecretKey))
 	if err != nil {
-		return "", nil, fmt.Errorf("failed to sign token: %w", err)
+		return "", fmt.Errorf("failed to sign token: %w", err)
 	}
 
-	return signedToken, claims, nil
+	return signedToken, nil
 }
 
 func (as *AuthRepository) createRefreshToken(accessToken string) (string, error) {

@@ -139,19 +139,22 @@ func (hr *httpRepository) verifyToken(c *fiber.Ctx) error {
 
 	claims, err := hr.authService.VerifyAccessToken(token.Access)
 	if err != nil {
-		c.Status(http.StatusBadRequest)
-		c.JSON(err)
-		return err
-	}
+		if err = hr.authService.VerifyRefreshToken(token); err != nil {
+			c.Status(http.StatusBadRequest)
+			c.JSON(LoginUserResponse{
+				Error: err,
+			})
+			return err
+		}
 
-	if err = hr.authService.VerifyRefreshToken(token); err != nil {
-		c.Status(http.StatusBadRequest)
-		c.JSON(err)
-		return err
+		//TODO: refresh access token
 	}
 
 	c.Status(http.StatusOK)
-	c.JSON(claims)
+	c.JSON(LoginUserResponse{
+		Token:  token,
+		Claims: claims,
+	})
 	return nil
 }
 
