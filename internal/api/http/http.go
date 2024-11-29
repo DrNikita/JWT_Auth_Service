@@ -61,6 +61,7 @@ func (hr *httpRepository) login(c *fiber.Ctx) error {
 
 	token, err := hr.httpService.LoginUser(loginUser)
 	if err != nil {
+		hr.logger.Error("failed to login", "err", err.Error())
 		c.Status(http.StatusBadRequest)
 		c.JSON(err)
 		return err

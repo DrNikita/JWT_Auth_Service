@@ -16,6 +16,7 @@ import (
 	_ "github.com/lib/pq"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 const contextTimeoutMillis = 5000
@@ -54,6 +55,7 @@ func main() {
 	}
 
 	app := fiber.New()
+	app.Use(cors.New())
 
 	ctx, done := context.WithTimeout(context.Background(), time.Second*contextTimeoutMillis)
 	defer done()
