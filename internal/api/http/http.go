@@ -89,6 +89,7 @@ func (hr *httpRepository) registration(c *fiber.Ctx) error {
 
 	err := c.BodyParser(&user)
 	if err != nil {
+		hr.logger.Error("failed to parse body", "err", err.Error())
 		c.Status(http.StatusBadRequest)
 		c.JSON(err)
 		return err
@@ -96,6 +97,7 @@ func (hr *httpRepository) registration(c *fiber.Ctx) error {
 
 	_, err = hr.httpService.RegisterUser(user)
 	if err != nil {
+		hr.logger.Error("failed to register user", "err", err.Error())
 		c.Status(http.StatusBadRequest)
 		c.JSON(err)
 		return err

@@ -74,3 +74,9 @@
     display: none;
   }
   
+  #to-register {
+    margin-top: 10px;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    color: #333;
+  }
