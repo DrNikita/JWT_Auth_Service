@@ -5,28 +5,21 @@ async function handleLogin(event) {
     const password = document.getElementById("password").value;
     const errorMessage = document.getElementById("errorMessage");
   
-    try {
-      const response = await fetch("http://localhost:8000/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-  
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Успешный вход:", data);
-        // Редирект на главную страницу или другую
-        window.location.href = "/dashboard";
-      } else {
+    const response = await fetch("http://localhost:8000/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    }).then((response) => response.json())
+      .then((token) => {
+        console.log(token.Access);
+        console.log(token.Refresh);
+      })
+      .catch((error) => {
+        console.error("Ошибка запроса:", error);
         errorMessage.style.display = "block";
-        errorMessage.textContent = "Неверный email или пароль";
-      }
-    } catch (error) {
-      console.error("Ошибка запроса:", error);
-      errorMessage.style.display = "block";
-      errorMessage.textContent = "Произошла ошибка. Попробуйте позже.";
-    }
+        errorMessage.textContent = "Произошла ошибка. Попробуйте позже.";
+      });
   }
   
