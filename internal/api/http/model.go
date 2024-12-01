@@ -11,8 +11,9 @@ type LogiinUserRequest struct {
 }
 
 type LoginUserResponse struct {
-	Token *auth.Token `json:",omitempty"`
-	Error error       `json:",omitempty"`
+	Token  *auth.Token      `json:",omitempty"`
+	Claims *auth.UserClaims `json:",omitempty"`
+	Error  error            `json:",omitempty"`
 }
 
 type RegisterUserRequest struct {

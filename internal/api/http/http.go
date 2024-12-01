@@ -72,6 +72,7 @@ func (hr *httpRepository) login(c *fiber.Ctx) error {
 
 	token, err := hr.httpService.LoginUser(loginUser)
 	if err != nil {
+		hr.logger.Error("failed to login", "err", err.Error())
 		c.Status(http.StatusBadRequest)
 		c.JSON(err)
 		return err
@@ -99,6 +100,7 @@ func (hr *httpRepository) registration(c *fiber.Ctx) error {
 
 	err := c.BodyParser(&user)
 	if err != nil {
+		hr.logger.Error("failed to parse body", "err", err.Error())
 		c.Status(http.StatusBadRequest)
 		c.JSON(err)
 		return err
@@ -106,6 +108,7 @@ func (hr *httpRepository) registration(c *fiber.Ctx) error {
 
 	_, err = hr.httpService.RegisterUser(user)
 	if err != nil {
+		hr.logger.Error("failed to register user", "err", err.Error())
 		c.Status(http.StatusBadRequest)
 		c.JSON(err)
 		return err
@@ -152,15 +155,20 @@ func (hr *httpRepository) verifyToken(c *fiber.Ctx) error {
 	if err != nil {
 		if err = hr.authService.VerifyRefreshToken(token); err != nil {
 			c.Status(http.StatusBadRequest)
-			c.JSON(err)
+			c.JSON(LoginUserResponse{
+				Error: err,
+			})
 			return err
 		}
 
-		//TODO: refresh aceess token
+		//TODO: refresh access token
 	}
 
 	c.Status(http.StatusOK)
-	c.JSON(claims)
+	c.JSON(LoginUserResponse{
+		Token:  token,
+		Claims: claims,
+	})
 	return nil
 }
 
