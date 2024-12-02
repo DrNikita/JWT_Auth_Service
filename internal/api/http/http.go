@@ -45,7 +45,7 @@ func (hr *httpRepository) RegisterRouts(app *fiber.App) {
 	middleware.SetMetricsPath(app)
 
 	app.Post("/login", hr.login)
-	app.Post("/register", hr.registration)
+	app.Post("/register", hr.registerUser)
 	app.Post("/verify-token", hr.verifyToken)
 
 	app.Use(encryptcookie.New(encryptcookie.Config{
@@ -91,11 +91,13 @@ func (hr *httpRepository) login(c *fiber.Ctx) error {
 	})
 
 	c.Status(http.StatusOK)
-	c.JSON(token)
+	c.JSON(LoginUserResponse{
+		Token: token,
+	})
 	return nil
 }
 
-func (hr *httpRepository) registration(c *fiber.Ctx) error {
+func (hr *httpRepository) registerUser(c *fiber.Ctx) error {
 	var user RegisterUserRequest
 
 	err := c.BodyParser(&user)
