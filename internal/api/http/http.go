@@ -35,11 +35,11 @@ func NewAuthRepository(httpService *HttpService, authService *auth.AuthRepositor
 }
 
 func (hr *httpRepository) RegisterRouts(app *fiber.App) {
-	app.Get("/metrics", monitor.New(monitor.Config{Title: "MyService Metrics Page"}))
+	app.Get("/monitor", monitor.New(monitor.Config{Title: "Auth service monitor"}))
 
 	middleware := prometheusfiber.NewPrometheus(
 		prometheusfiber.WithSubSystem("fiber"),
-		prometheusfiber.WithMetricPath("/prometheus-metrics"),
+		prometheusfiber.WithMetricPath("/metrics"),
 	)
 	middleware.Use(app)
 	middleware.SetMetricsPath(app)
