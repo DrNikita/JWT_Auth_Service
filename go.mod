@@ -10,7 +10,6 @@ require (
 	github.com/jpfuentes2/go-env v0.0.0-20150316001728-8e0a68de05f2
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/lib/pq v1.10.9
-	github.com/prometheus/client_golang v1.20.5
 )
 
 require (
@@ -19,6 +18,7 @@ require (
 	github.com/gofiber/adaptor/v2 v2.1.31 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/philhofer/fwd v1.1.2 // indirect
+	github.com/prometheus/client_golang v1.20.5 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.55.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect

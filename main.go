@@ -13,10 +13,9 @@ import (
 	"os"
 	"time"
 
-	_ "github.com/lib/pq"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	_ "github.com/lib/pq"
 )
 
 const contextTimeoutMillis = 5000

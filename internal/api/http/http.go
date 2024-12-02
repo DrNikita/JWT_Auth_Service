@@ -13,6 +13,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/csrf"
 	"github.com/gofiber/fiber/v2/middleware/encryptcookie"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
+	"github.com/gofiber/fiber/v2/middleware/pprof"
 	"github.com/halilylm/prometheusfiber"
 )
 
@@ -43,6 +44,8 @@ func (hr *httpRepository) RegisterRouts(app *fiber.App) {
 	)
 	middleware.Use(app)
 	middleware.SetMetricsPath(app)
+
+	app.Use(pprof.New())
 
 	app.Post("/login", hr.login)
 	app.Post("/register", hr.registerUser)
