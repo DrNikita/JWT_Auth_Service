@@ -12,6 +12,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/csrf"
 	"github.com/gofiber/fiber/v2/middleware/encryptcookie"
+	"github.com/gofiber/fiber/v2/middleware/monitor"
+	"github.com/halilylm/prometheusfiber"
 )
 
 type httpRepository struct {
@@ -33,6 +35,15 @@ func NewAuthRepository(httpService *HttpService, authService *auth.AuthRepositor
 }
 
 func (hr *httpRepository) RegisterRouts(app *fiber.App) {
+	app.Get("/metrics", monitor.New(monitor.Config{Title: "MyService Metrics Page"}))
+
+	middleware := prometheusfiber.NewPrometheus(
+		prometheusfiber.WithSubSystem("fiber"),
+		prometheusfiber.WithMetricPath("/prometheus-metrics"),
+	)
+	middleware.Use(app)
+	middleware.SetMetricsPath(app)
+
 	app.Post("/login", hr.login)
 	app.Post("/register", hr.registration)
 	app.Post("/verify-token", hr.verifyToken)
@@ -61,6 +72,7 @@ func (hr *httpRepository) login(c *fiber.Ctx) error {
 
 	token, err := hr.httpService.LoginUser(loginUser)
 	if err != nil {
+		hr.logger.Error("failed to login", "err", err.Error())
 		c.Status(http.StatusBadRequest)
 		c.JSON(err)
 		return err
@@ -88,6 +100,7 @@ func (hr *httpRepository) registration(c *fiber.Ctx) error {
 
 	err := c.BodyParser(&user)
 	if err != nil {
+		hr.logger.Error("failed to parse body", "err", err.Error())
 		c.Status(http.StatusBadRequest)
 		c.JSON(err)
 		return err
@@ -95,6 +108,7 @@ func (hr *httpRepository) registration(c *fiber.Ctx) error {
 
 	_, err = hr.httpService.RegisterUser(user)
 	if err != nil {
+		hr.logger.Error("failed to register user", "err", err.Error())
 		c.Status(http.StatusBadRequest)
 		c.JSON(err)
 		return err

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./login.css">
+  <script src="./login.js" defer></script>
+  <title>Login</title>
+</head>
+<body>
+  <div id="loginContainer">
+    <form id="loginForm" onsubmit="handleLogin(event)">
+      <h2>Войти</h2>
+      <div class="inputField">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" placeholder="Введите ваш email" required>
+      </div>
+      <div class="inputField">
+        <label for="password">Пароль:</label>
+        <input type="password" id="password" name="password" placeholder="Введите ваш пароль" required>
+      </div>
+      <div id="errorMessage">Неверный email или пароль</div>
+      <button type="submit" id="submitButton">Войти</button>
+      <div id="to-register">
+        <span>Нет аккаунта?</span>
+        <br>
+          <a href="./registration.html" style="color: cadetblue; text-decoration: none; text-align: center;">Регистрация</a>
+        </br>
+        </div>
+    </form>
+  </div>
+</body>
+</html>
