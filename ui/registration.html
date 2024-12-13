@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./registration.css">
+  <script src="./register.js" defer></script>
+  <title>Регистрация</title>
+</head>
+<body>
+  <div id="registerContainer">
+    <form id="registerForm" onsubmit="handleRegister(event)">
+      <h2>Регистрация</h2>
+      
+      <div class="inputField">
+        <label for="name">Имя:</label>
+        <input type="text" id="name" name="name" placeholder="Введите имя" required>
+      </div>
+
+      <div class="inputField">
+        <label for="secondName">Отчество:</label>
+        <input type="text" id="secondName" name="secondName" placeholder="Введите отчество" required>
+      </div>
+
+      <div class="inputField">
+        <label for="surname">Фамилия:</label>
+        <input type="text" id="surname" name="surname" placeholder="Введите фамилию" required>
+      </div>
+
+      <div class="inputField">
+        <label for="jobRole">Должность:</label>
+        <select id="jobRole" name="jobRoleId" required>
+          <option value="" disabled selected>Выберите должность</option>
+          <option value="1">Менеджер</option>
+          <option value="2">Разработчик</option>
+          <option value="3">Аналитик</option>
+        </select>
+      </div>
+
+      <div class="inputField">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" placeholder="Введите email" required>
+      </div>
+
+      <div class="inputField">
+        <label for="password">Пароль:</label>
+        <input type="password" id="password" name="password" placeholder="Введите пароль" required>
+      </div>
+
+      <div class="inputField">
+        <label for="birthday">Дата рождения:</label>
+        <input type="date" id="birthday" name="birthday" required>
+      </div>
+
+      <div class="inputField">
+        <label for="country">Страна:</label>
+        <input type="text" id="country" name="country" placeholder="Введите страну" required>
+      </div>
+
+      <div class="inputField">
+        <label for="region">Область:</label>
+        <input type="text" id="region" name="region" placeholder="Введите область" required>
+      </div>
+
+      <div class="inputField">
+        <label for="district">Район:</label>
+        <input type="text" id="district" name="district" placeholder="Введите район" required>
+      </div>
+
+      <div class="inputField">
+        <label for="settlementType">Тип населённого пункта:</label>
+        <select id="settlementType" name="settlementType" required>
+          <option value="" disabled selected>Выберите тип</option>
+          <option value="1">Город</option>
+          <option value="2">Село</option>
+          <option value="3">Посёлок</option>
+        </select>
+      </div>
+
+      <div class="inputField">
+        <label for="settlementName">Название населённого пункта:</label>
+        <input type="text" id="settlementName" name="settlementName" placeholder="Введите название" required>
+      </div>
+
+      <div class="inputField">
+        <label for="street">Улица:</label>
+        <input type="text" id="street" name="street" placeholder="Введите улицу" required>
+      </div>
+
+      <div class="inputField">
+        <label for="house">Дом:</label>
+        <input type="text" id="house" name="house" placeholder="Введите дом" required>
+      </div>
+
+      <div class="inputField">
+        <label for="apartment">Квартира:</label>
+        <input type="text" id="apartment" name="apartment" placeholder="Введите квартиру" required>
+      </div>
+
+      <div id="errorMessage">Ошибка регистрации</div>
+      <button type="submit" id="submitButton">Зарегистрироваться</button>
+    </form>
+    <div style="margin-top: 10px; text-align: center;">
+        <span>Уже есть аккаунт?</span>
+        <a href="./login.html" style="color: cadetblue; text-decoration: none;">Войти</a>
+    </div>
+  </div>
+</body>
+</html> 

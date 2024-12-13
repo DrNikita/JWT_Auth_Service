@@ -55,6 +55,7 @@ func main() {
 
 	app := fiber.New()
 	app.Use(cors.New())
+	app.Static("/view", "./ui")
 
 	ctx, done := context.WithTimeout(context.Background(), time.Second*contextTimeoutMillis)
 	defer done()

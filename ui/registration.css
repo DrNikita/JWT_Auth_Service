@@ -1,0 +1,78 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  #registerContainer {
+    width: 700px;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  #registerForm {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+  }
+  
+  #registerForm h2 {
+    grid-column: span 2;
+    text-align: center;
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  
+  .inputField {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .inputField label {
+    font-size: 12px;
+    margin-bottom: 5px;
+    color: #555;
+  }
+  
+  .inputField input,
+  .inputField select {
+    padding: 5px;
+    font-size: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  #submitButton {
+    grid-column: span 2;
+    padding: 10px;
+    background-color: cadetblue;
+    color: white;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+  }
+  
+  #submitButton:hover {
+    background-color: lightblue;
+  }
+  
+  #errorMessage {
+    grid-column: span 2;
+    text-align: center;
+    color: red;
+    font-size: 12px;
+    display: none;
+  }
+  

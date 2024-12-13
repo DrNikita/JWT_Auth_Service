@@ -5,6 +5,7 @@ import (
 	"auth/internal/auth"
 	"context"
 	"errors"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"time"
@@ -36,6 +37,7 @@ func NewAuthRepository(httpService *HttpService, authService *auth.AuthRepositor
 }
 
 func (hr *httpRepository) RegisterRouts(app *fiber.App) {
+	//metrics
 	app.Get("/monitor", monitor.New(monitor.Config{Title: "Auth service monitor"}))
 
 	middleware := prometheusfiber.NewPrometheus(
@@ -47,11 +49,13 @@ func (hr *httpRepository) RegisterRouts(app *fiber.App) {
 
 	app.Use(pprof.New())
 
+	//logic
 	app.Post("/login", hr.login)
 	app.Post("/register", hr.registerUser)
 	app.Post("/verify", hr.verifyCookieToken)
 	app.Post("/verify-header-token", hr.verifyToken)
 
+	//middleware
 	app.Use(encryptcookie.New(encryptcookie.Config{
 		Key:    hr.authConfig.CookieSecret,
 		Except: []string{csrf.ConfigDefault.CookieName}, // exclude CSRF cookie
@@ -131,6 +135,8 @@ func (hr *httpRepository) verifyCookieToken(c *fiber.Ctx) error {
 		Refresh: c.Cookies("refresh_token"),
 	}
 
+	hr.logger.Info("OK!!!")
+
 	claims, err := hr.authService.VerifyAccessToken(token.Access)
 	if err != nil {
 		claims, err := hr.authService.VerifyRefreshToken(token.Refresh)
@@ -182,6 +188,7 @@ func (hr *httpRepository) verifyToken(c *fiber.Ctx) error {
 	claims, err := hr.authService.VerifyAccessToken(token.Access)
 	if err != nil {
 		claims, err := hr.authService.VerifyRefreshToken(token.Refresh)
+
 		if err != nil {
 			c.Status(http.StatusBadRequest)
 			c.JSON(LoginUserResponse{
@@ -191,6 +198,7 @@ func (hr *httpRepository) verifyToken(c *fiber.Ctx) error {
 			c.JSON(LoginUserResponse{
 				Error: err,
 			})
+
 			return err
 		}
 
@@ -208,6 +216,7 @@ func (hr *httpRepository) verifyToken(c *fiber.Ctx) error {
 			Token:  token,
 			Claims: claims,
 		})
+
 		return nil
 	}
 
@@ -216,6 +225,7 @@ func (hr *httpRepository) verifyToken(c *fiber.Ctx) error {
 		Token:  token,
 		Claims: claims,
 	})
+
 	return nil
 }
 
