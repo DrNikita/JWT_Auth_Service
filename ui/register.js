@@ -35,7 +35,7 @@ async function handleRegister(event) {
 
     if (response.ok) {
       alert("Регистрация прошла успешно!");
-      window.location.href = "/login";
+      window.location.href = "http://localhost:8000/login.html";
     } else {
       errorMessage.style.display = "block";
       errorMessage.textContent = "Ошибка регистрации. Проверьте данные.";

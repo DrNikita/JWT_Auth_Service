@@ -134,8 +134,6 @@ func (hr *httpRepository) verifyCookieToken(c *fiber.Ctx) error {
 		Refresh: c.Cookies("refresh_token"),
 	}
 
-	hr.logger.Info("OK!!!")
-
 	claims, err := hr.authService.VerifyAccessToken(token.Access)
 	if err != nil {
 		claims, err := hr.authService.VerifyRefreshToken(token.Refresh)
