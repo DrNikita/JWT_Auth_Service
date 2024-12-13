@@ -13,7 +13,9 @@ async function handleLogin(event) {
     body: JSON.stringify({ email, password }),
   }).then((response) => response.json())
     .then((token) => {
-      window.location.replace("http://localhost:8088");
+      setTimeout(() => {
+        location.href = "http://localhost:8088/";
+      }, 500);
     })
     .catch((error) => {
       console.error("Ошибка запроса:", error);

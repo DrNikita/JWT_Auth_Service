@@ -59,12 +59,7 @@ func (hr *httpRepository) RegisterRouts(app *fiber.App) {
 		Key:    hr.authConfig.CookieSecret,
 		Except: []string{csrf.ConfigDefault.CookieName}, // exclude CSRF cookie
 	}))
-	app.Use(csrf.New(csrf.Config{
-		KeyLookup:      "header:" + csrf.HeaderName,
-		CookieSameSite: "Lax",
-		CookieSecure:   true,
-		CookieHTTPOnly: false,
-	}))
+	app.Use(csrf.New(csrf.Config{}))
 }
 
 func (hr *httpRepository) login(c *fiber.Ctx) error {
@@ -136,10 +131,6 @@ func (hr *httpRepository) verifyCookieToken(c *fiber.Ctx) error {
 	if err != nil {
 		claims, err := hr.authService.VerifyRefreshToken(token.Refresh)
 		if err != nil {
-			c.Status(http.StatusBadRequest)
-			c.JSON(LoginUserResponse{
-				Error: err,
-			})
 			c.Status(http.StatusUnauthorized)
 			c.JSON(LoginUserResponse{
 				Error: err,

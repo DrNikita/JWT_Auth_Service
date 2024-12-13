@@ -62,6 +62,7 @@ func (as *AuthRepository) CreateAccessToken(claims *UserClaims) (string, error) 
 
 	signedToken, err := token.SignedString([]byte(as.config.SecretKey))
 	if err != nil {
+		as.logger.Error("failed to sign access token")
 		return "", fmt.Errorf("failed to sign token: %w", err)
 	}
 
@@ -73,6 +74,7 @@ func (as *AuthRepository) CreateRefreshToken(claims *UserClaims) (string, error)
 
 	signedToken, err := token.SignedString([]byte(as.config.SecretKey))
 	if err != nil {
+		as.logger.Error("failed to sign refresh token")
 		return "", fmt.Errorf("failed to sign token: %w", err)
 	}
 
@@ -83,17 +85,20 @@ func (as *AuthRepository) VerifyAccessToken(accessToken string) (*UserClaims, er
 	token, err := jwt.ParseWithClaims(accessToken, &UserClaims{}, func(token *jwt.Token) (interface{}, error) {
 		_, ok := token.Method.(*jwt.SigningMethodHMAC)
 		if !ok {
+			as.logger.Error("failed to verify access token")
 			return nil, fmt.Errorf("invalid token signing method")
 		}
 
 		return []byte(as.config.SecretKey), nil
 	})
 	if err != nil {
+		as.logger.Error("failed to verify access token")
 		return nil, fmt.Errorf("error parsing token")
 	}
 
 	claims, ok := token.Claims.(*UserClaims)
 	if !ok {
+		as.logger.Error("failed to verify access token")
 		return nil, fmt.Errorf("invalid token claims")
 	}
 
@@ -104,17 +109,20 @@ func (as *AuthRepository) VerifyRefreshToken(refreshToken string) (*UserClaims, 
 	token, err := jwt.ParseWithClaims(refreshToken, &UserClaims{}, func(token *jwt.Token) (interface{}, error) {
 		_, ok := token.Method.(*jwt.SigningMethodHMAC)
 		if !ok {
+			as.logger.Error("failed to verify refresh token")
 			return nil, fmt.Errorf("invalid token signing method")
 		}
 
 		return []byte(as.config.SecretKey), nil
 	})
 	if err != nil {
+		as.logger.Error("failed to verify refresh token")
 		return nil, fmt.Errorf("error parsing token")
 	}
 
 	claims, ok := token.Claims.(*UserClaims)
 	if !ok {
+		as.logger.Error("failed to verify refresh token")
 		return nil, fmt.Errorf("invalid token claims")
 	}
 
