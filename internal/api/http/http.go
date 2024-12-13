@@ -5,7 +5,6 @@ import (
 	"auth/internal/auth"
 	"context"
 	"errors"
-	"fmt"
 	"log/slog"
 	"net/http"
 	"time"
