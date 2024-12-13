@@ -4,7 +4,6 @@ import (
 	"auth/config"
 	"auth/internal/auth"
 	"context"
-	"errors"
 	"log/slog"
 	"net/http"
 	"time"
@@ -52,7 +51,8 @@ func (hr *httpRepository) RegisterRouts(app *fiber.App) {
 	app.Post("/login", hr.login)
 	app.Post("/register", hr.registerUser)
 	app.Post("/verify", hr.verifyCookieToken)
-	app.Post("/verify-header-token", hr.verifyToken)
+	// Unused
+	// app.Post("/verify-header-token", hr.verifyToken)
 
 	//middleware
 	app.Use(encryptcookie.New(encryptcookie.Config{
@@ -98,9 +98,7 @@ func (hr *httpRepository) login(c *fiber.Ctx) error {
 	})
 
 	c.Status(http.StatusOK)
-	c.JSON(LoginUserResponse{
-		Token: token,
-	})
+	c.JSON(LoginUserResponse{})
 	return nil
 }
 
@@ -160,7 +158,6 @@ func (hr *httpRepository) verifyCookieToken(c *fiber.Ctx) error {
 		token.Access = newAccessToken
 		c.Status(http.StatusCreated)
 		c.JSON(LoginUserResponse{
-			Token:  token,
 			Claims: claims,
 		})
 		return nil
@@ -168,79 +165,79 @@ func (hr *httpRepository) verifyCookieToken(c *fiber.Ctx) error {
 
 	c.Status(http.StatusOK)
 	c.JSON(LoginUserResponse{
-		Token:  token,
 		Claims: claims,
 	})
 	return nil
 }
 
-func (hr *httpRepository) verifyToken(c *fiber.Ctx) error {
-	token, err := parseHeaderToken(c.GetReqHeaders())
-	if err != nil {
-		c.Status(http.StatusBadRequest)
-		c.JSON(err)
-		return err
-	}
+// Unused
+// func (hr *httpRepository) verifyToken(c *fiber.Ctx) error {
+// 	token, err := parseHeaderToken(c.GetReqHeaders())
+// 	if err != nil {
+// 		c.Status(http.StatusBadRequest)
+// 		c.JSON(err)
+// 		return err
+// 	}
 
-	claims, err := hr.authService.VerifyAccessToken(token.Access)
-	if err != nil {
-		claims, err := hr.authService.VerifyRefreshToken(token.Refresh)
+// 	claims, err := hr.authService.VerifyAccessToken(token.Access)
+// 	if err != nil {
+// 		claims, err := hr.authService.VerifyRefreshToken(token.Refresh)
 
-		if err != nil {
-			c.Status(http.StatusBadRequest)
-			c.JSON(LoginUserResponse{
-				Error: err,
-			})
-			c.Status(http.StatusUnauthorized)
-			c.JSON(LoginUserResponse{
-				Error: err,
-			})
+// 		if err != nil {
+// 			c.Status(http.StatusBadRequest)
+// 			c.JSON(LoginUserResponse{
+// 				Error: err,
+// 			})
+// 			c.Status(http.StatusUnauthorized)
+// 			c.JSON(LoginUserResponse{
+// 				Error: err,
+// 			})
 
-			return err
-		}
+// 			return err
+// 		}
 
-		newAccessToken, err := hr.authService.CreateAccessToken(claims)
-		if err != nil {
-			c.Status(http.StatusBadRequest)
-			c.JSON(LoginUserResponse{
-				Error: err,
-			})
-		}
+// 		newAccessToken, err := hr.authService.CreateAccessToken(claims)
+// 		if err != nil {
+// 			c.Status(http.StatusBadRequest)
+// 			c.JSON(LoginUserResponse{
+// 				Error: err,
+// 			})
+// 		}
 
-		token.Access = newAccessToken
-		c.Status(http.StatusCreated)
-		c.JSON(LoginUserResponse{
-			Token:  token,
-			Claims: claims,
-		})
+// 		token.Access = newAccessToken
+// 		c.Status(http.StatusCreated)
+// 		c.JSON(LoginUserResponse{
+// 			Token:  token,
+// 			Claims: claims,
+// 		})
 
-		return nil
-	}
+// 		return nil
+// 	}
 
-	c.Status(http.StatusOK)
-	c.JSON(LoginUserResponse{
-		Token:  token,
-		Claims: claims,
-	})
+// 	c.Status(http.StatusOK)
+// 	c.JSON(LoginUserResponse{
+// 		Token:  token,
+// 		Claims: claims,
+// 	})
 
-	return nil
-}
+// 	return nil
+// }
 
-func parseHeaderToken(headers map[string][]string) (*auth.Token, error) {
-	token := new(auth.Token)
+// func parseHeaderToken(headers map[string][]string) (*auth.Token, error) {
+// 	token := new(auth.Token)
 
-	accessToken, ok := headers["Access_token"]
-	if ok && len(accessToken) > 0 {
-		token.Access = accessToken[0]
-	} else {
-		return nil, errors.New("failed to get access token from headers")
-	}
-	refreshToken, ok := headers["Refresh_token"]
-	if ok && len(refreshToken) > 0 {
-		token.Refresh = refreshToken[0]
-	} else {
-		return nil, errors.New("failed to get refresh token from headers")
-	}
+// 	accessToken, ok := headers["Access_token"]
+// 	if ok && len(accessToken) > 0 {
+// 		token.Access = accessToken[0]
+// 	} else {
+// 		return nil, errors.New("failed to get access token from headers")
+// 	}
+// 	refreshToken, ok := headers["Refresh_token"]
+// 	if ok && len(refreshToken) > 0 {
+// 		token.Refresh = refreshToken[0]
+// 	} else {
+// 		return nil, errors.New("failed to get refresh token from headers")
+// 	}
 
-	return token, nil
-}
+// 	return token, nil
+// }
